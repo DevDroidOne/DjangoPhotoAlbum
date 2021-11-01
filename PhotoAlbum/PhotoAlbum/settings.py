@@ -25,7 +25,7 @@ SECRET_KEY = 'sx7ws06xx8p((vu$gmx$xdn4-!5wae98s_vszro@_=qy907pi^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['35.200.178.201'] 
+ALLOWED_HOSTS = ['35.200.178.201','127.0.0.1'] 
 
 
 # Application definition
@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'AlbumApp.apps.AlbumappConfig'
 ]
 
 MIDDLEWARE = [
