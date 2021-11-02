@@ -8,7 +8,7 @@ class Album(models.Model):
         return self.name
 
 class Photo(models.Model):
-    album = models.ForeignKey(Album, on_delete=models.SET_NULL,null=True)
+    album = models.ForeignKey(Album, on_delete=models.SET_NULL,null=True,blank=True)
     image = models.ImageField(null=False,blank=False)
     description = models.TextField()
 

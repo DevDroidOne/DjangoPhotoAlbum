@@ -23,12 +23,18 @@
                         Albums
                     </div>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item">All Pictures</li>
-                        <li class="list-group-item">An item</li>
-                        <li class="list-group-item">A second item</li>
-                        <li class="list-group-item">A third item</li>
+                        <li class="list-group-item">
+                            <a href="{% url 'gallery' %}">All Pictures</a>
+                        </li>
+                        {% for album in albums %}
+                        <li class="list-group-item">
+                            <a href="{% url 'gallery' %}?album={{album.name}}">
+                                {{album.name}}
+                            </a>
+                        </li>
+                        {% endfor %}
 
-                        <a href="{%url 'add' %}" class = "btn btn-dark btn-block btm-sm m-1">Add Photo</a>
+                        <a href="{%url 'add' %}" class = "btn btn-dark btn-block btm-sm m-1">Add Photos</a>
 
                     </ul>
                 </div>
@@ -36,54 +42,26 @@
 
             <div class="col-md-9">
                 <div class="row">
-
+                    {% for photo in photos %}
                     <div class="col-md-4">
                         <div class="card my-2">
-                            <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.hdwallpaper.nu%2Fwp-content%2Fuploads%2F2015%2F02%2FFunny-Cat-Hidden.jpg&f=1&nofb=1" 
+                            <img src="{{photo.image.url}}" 
                             class="image-thumbnail"
                             alt="...">
                             <div class="card-body">
-                                <small class="card-text">Categorie: Pets</small>
+                                <small class="card-text">Album: {{photo.album.name}}</small>
                             </div>
-                            <a href="{% url 'photo' 5 %}" class ="btn btn-outline-dark btm-sm m-1">View</a>
+                            <a href="{% url 'photo' photo.id %}" class ="btn btn-outline-dark btm-sm m-1">View</a>
                         </div>
                     </div>
+                    {% empty %}
+                    <h3>No Photos...</h3>
+                    {% endfor %}
 
-                    <div class="col-md-4">
-                        <div class="card my-2">
-                            <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2F4.bp.blogspot.com%2F-RXgfBtzRTEE%2FT9xVYBeyfKI%2FAAAAAAAAAGU%2FMTxgNoRh87c%2Fs1600%2FSiamese_Cat.jpg&f=1&nofb=1" 
-                            class="image-thumbnail"
-                            alt="...">
-                            <div class="card-body">
-                                <small class="card-text">Categorie: Pets</small>
-                            </div>
-                            <a href="{% url 'photo' 5 %}" class ="btn btn-outline-dark btm-sm m-1">View</a>
-                        </div>
-                    </div>
 
-                    <div class="col-md-4">
-                        <div class="card my-2">
-                            <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.hdwallpaper.nu%2Fwp-content%2Fuploads%2F2015%2F02%2FFunny-Cat-Hidden.jpg&f=1&nofb=1" 
-                            class="image-thumbnail"
-                            alt="...">
-                            <div class="card-body">
-                                <small class="card-text">Categorie: Pets</small>
-                            </div>
-                            <a href="{% url 'photo' 5 %}" class ="btn btn-outline-dark btm-sm m-1">View</a>
-                        </div>
-                    </div>
 
-                    <div class="col-md-4">
-                        <div class="card my-2">
-                            <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.hdwallpaper.nu%2Fwp-content%2Fuploads%2F2015%2F02%2FFunny-Cat-Hidden.jpg&f=1&nofb=1" 
-                            class="image-thumbnail"
-                            alt="...">
-                            <div class="card-body">
-                                <small class="card-text">Categorie: Pets</small>
-                            </div>
-                            <a href="{% url 'photo' 5 %}" class ="btn btn-outline-dark btm-sm m-1">View</a>
-                        </div>
-                    </div>
+
+
 
                     
                     
