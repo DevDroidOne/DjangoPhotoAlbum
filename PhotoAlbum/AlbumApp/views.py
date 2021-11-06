@@ -1,52 +1,64 @@
 from django.shortcuts import render, redirect
 from .models import Album,Photo
 
-def base(request):
-    return render(request,'photos/base.html')
 
 def gallery(request):
+    user=request.user
     album = request.GET.get('album')
     print('album:',album)
 
     if album == None:
-        photos = Photo.objects.all()
+        photos = request.user.photo_set.all()
     else:
-        photos = Photo.objects.filter(album__name=album)
+        photos = request.user.photo_set.filter(album__name=album)
 
-    albums = Album.objects.all()
+    albums = request.user.album_set.all()
 
-    context = {'albums':albums, 'photos':photos}
+    if request.method == 'POST':
+        data = request.POST
+        print(data)
+        if 'DeletePic' in data:
+            print(data['DeletePic'])
+            print(request.user.photo_set.get(id=data['DeletePic']).delete())
+        elif 'DeleteAlbum' in data:
+            print(data['DeleteAlbum'])
+            print(request.user.album_set.get(id=data['DeleteAlbum']).delete())
+        else:
+            print("Nope")
+        
+
+
+    context = {'albums':albums, 'photos':photos, 'user':user}
     #print(context)
     return render(request,'photos/gallery.html',context)
 
 
-
-
 def photo(request,pk):
-    photo = Photo.objects.get(id=pk)
+    photo = request.user.photo_set.get(id=pk)
     return render(request,'photos/photo.html', {'photo':photo})
 
 
-
-
 def add(request):
-    albums = Album.objects.all()
-
+    albums = request.user.album_set.all()
+    print(albums)
     if request.method == 'POST':
         data = request.POST
         images = request.FILES.getlist('images')
         print('data:' , data)
         print('image:' , images)
+        #print(request.user.album_set.create(name="Created in code 1"))
+        #print(request.user.album_set.get(id=2))
+        #print(request.user.photo_set.all())
 
         if data['album'] != 'none':
-            album=Album.objects.get(id=data['album'])
+            album=request.user.album_set.get(id=data['album'])
         elif data['album'] != "":
-            album , created = Album.objects.get_or_create(name = data['album_new'])
+            album , created = request.user.album_set.get_or_create(name = data['album_new'])
         else:
-            category = None
+            album = None
         
         for image in images:
-            photo = Photo.objects.create(
+            photo = request.user.photo_set.create(
                 album = album,
                 description = data['description'],
                 image=image,
