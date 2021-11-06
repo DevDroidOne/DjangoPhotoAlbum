@@ -8,6 +8,8 @@ https://docs.djangoproject.com/en/2.2/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
+
+To stop the port use          fuser -k 9000/tcp
 """
 
 import os
@@ -38,7 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'AlbumApp.apps.AlbumappConfig'
+    'AlbumApp.apps.AlbumappConfig',
+    'UserManager.apps.UsermanagerConfig',
+    'crispy_forms'
 ]
 
 MIDDLEWARE = [
@@ -130,6 +134,7 @@ STATICFILES_DIRS = [
 MEDIA_ROOT = 'static/images'
 STATIC_ROOT = 'staticfiles'
 
+CRISPY_TEMPLATE_PACK="bootstrap4"
 
-
-
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/login"

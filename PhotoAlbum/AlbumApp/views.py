@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from .models import Album,Photo
 
+def base(request):
+    return render(request,'photos/base.html')
 
-# Create your views here.
 def gallery(request):
     album = request.GET.get('album')
     print('album:',album)
@@ -18,10 +19,16 @@ def gallery(request):
     #print(context)
     return render(request,'photos/gallery.html',context)
 
+
+
+
 def photo(request,pk):
     photo = Photo.objects.get(id=pk)
     return render(request,'photos/photo.html', {'photo':photo})
-    
+
+
+
+
 def add(request):
     albums = Album.objects.all()
 
