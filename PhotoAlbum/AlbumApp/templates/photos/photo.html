@@ -9,23 +9,45 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
 <body class=m-5>
+    <form method="POST">{% csrf_token %}
     <div class="container">
-        <div class="row justify-content-center">
-            <div class = "col">
+        <div class = "row">
+            <div class="col">
                 <a href="{% url 'gallery' %}" class = "btn btn-dark my-3">Go Back</a>
                 
-                <div style="height:90vh;">
-                    <img style="max-width:100%; max-height: 100%; "
-                    src="{{photo.image.url}}">
-                    
-                    <p>{{photo.description}}</p>
-                </div>
-            
-            
+                    <div style="height:90vh;">
+                        <img style="max-width:100%; max-height: 100%;"
+                        src="{{photo.image.url}}">
+                    </div>
             </div>
+                
+            
+            <div class= "col" >
+                <h3>The metadata to edit</h3>
+                <div class="input-group">
+                    <span class="input-group-text">Description</span> 
+                    <textarea class="form-control" aria-label="With textarea" name="PhotoDescEdit">{{photo.description}}</textarea>
+                </div>
+                
+                <h3>Users the picture is visible to</h3>
+                {% for user in usersVis %}
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" name="{{user}}" checked>
+                        <label class="form-check-label" for="flexSwitchCheckDefault" >{{user}}</label>
+                    </div>
+                {% endfor %}
+                {% for user in usersNotVis %}
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" name="{{user}}">
+                    <label class="form-check-label" for="flexSwitchCheckDefault" >{{user}}</label>
+                </div>
+                {% endfor %}
+
+                <input class="btn btn-primary" type="submit" value="Submit Edit">
+            </div>
+            
         </div>
-    </div>    
-    
+    </form>
     
 </body>
 </html>

@@ -17,8 +17,9 @@
 </head>
 <body class="m-5">
     {%if user.is_authenticated %}
+
     <div class="container">
-        <div class= "row">
+        <div class= "row mb-3">
             <div class="d-grid gap-2">
                 <h2>Hello there {{user}} this is your gallery</h2>
             </div>
@@ -28,9 +29,17 @@
             </div>
         </div>
     </div>
+
+
     
     <form method="POST" action="">{% csrf_token %}
         <div class="container">
+            
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" name= "searchDesc" placeholder="You can search the descriptions down to the letter....">
+                <button type="submit" class="btn btn-primary" >Search descriptions</button>
+            </div>
+
             <div class="row">
                 <div class="col-md-3">
                     <div class="card">
@@ -49,7 +58,7 @@
                                 <button type="submit" class="btn btn-outline-danger btn-sm" name ="DeleteAlbum" value="{{album.id}}">Delete</button>
                             </li>
                             {% endfor %}
-                            <a href="{%url 'add' %}" class = "btn btn-dark btn-block btm-sm m-1">Add Photos</a>
+                            <a href="{%url 'add' %}" class = "btn btn-dark btn-block m-1">Add Photos</a>
                         </ul>
                     </div>
                 </div>
@@ -65,10 +74,10 @@
                                 <div class="card-body">
                                     <small class="card-text">Album: {{photo.album.name}}</small>
                                 </div>
-                                <div class = "d-grid gap-2 d-md-block mx-auto">
-                                    <a href="{% url 'photo' photo.id %}" class ="btn btn-outline-dark btm-sm m-1">View</a>
-                                    
-                                    <button type="submit" class="btn btn-outline-danger" name ="DeletePic" value="{{photo.id}}">Delete</button>
+                                <div class = "btn-group mx-auto" role="group">
+                                    <a href="{% url 'photo' photo.id %}" class ="btn btn-outline-success btn-sm">View</a>
+                                    <a href="{% url 'download' photo.id %}" class="btn btn-outline-warning btn-sm">Download</a>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" name ="DeletePic" value="{{photo.id}}">Delete</button>
                                 </div>
                             </div>
                         </div>
