@@ -22,22 +22,51 @@
             </div>
                 
             
-            <div class= "col" >
+            <div class= "col"  >
                 <h3>The metadata to edit</h3>
-                <div class="input-group">
+                <div class="input-group m-3">
                     <span class="input-group-text">Description</span> 
                     <textarea class="form-control" aria-label="With textarea" name="PhotoDescEdit">{{photo.description}}</textarea>
                 </div>
+                <div class="input-group  m-3">
+                    <span class="input-group-text">Geolocation</span> 
+                    <textarea class="form-control" aria-label="With textarea" name="GeolocationEdit">{{photo.geolocation}}</textarea>
+                </div>
+                <div class="input-group  m-3">
+                    <span class="input-group-text">Tags</span> 
+                    <textarea class="form-control" aria-label="With textarea" name="TagsEdit">{{photo.tags}}</textarea>
+                </div>
+                <div class="input-group m-3">
+                    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet"/>
+                    <link href= "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker.css" rel="stylesheet"/>
+                        <script src= "https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"> </script>
+                        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+                        <script src= "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>
+                    </head>
+                    <body>
+                        <span class="input-group-text">Captured date</span>
+                        <input name="captureDateEdit" type="text" class="date form-control" placeholder="{{photo.captureDate}}"/>
+                    
+                        <script type="text/javascript">
+                        $(".date").datepicker({
+                            format: "yyyy-mm-dd",
+                        });
+                        </script>
+                </div>
+                <div class="input-group  m-3">
+                    <span class="input-group-text">Captured By</span> 
+                    <textarea class="form-control" aria-label="With textarea" name="CaptuedByEdit">{{photo.capturedBy}}</textarea>
+                </div>
                 
-                <h3>Users the picture is visible to</h3>
+                <h3>Users the picture is shared/visible to</h3>
                 {% for user in usersVis %}
-                    <div class="form-check form-switch">
+                <div class="form-check form-switch m-3">
                         <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" name="{{user}}" checked>
-                        <label class="form-check-label" for="flexSwitchCheckDefault" >{{user}}</label>
-                    </div>
+                    <label class="form-check-label" for="flexSwitchCheckDefault" >{{user}}</label>
+                </div>
                 {% endfor %}
                 {% for user in usersNotVis %}
-                <div class="form-check form-switch">
+                <div class="form-check form-switch m-3">
                     <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" name="{{user}}">
                     <label class="form-check-label" for="flexSwitchCheckDefault" >{{user}}</label>
                 </div>

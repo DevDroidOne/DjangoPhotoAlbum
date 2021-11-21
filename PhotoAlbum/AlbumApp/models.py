@@ -12,7 +12,11 @@ class Photo(models.Model):
     user = models.ManyToManyField(User)
     album = models.ForeignKey(Album, on_delete=models.SET_NULL,null=True,blank=True)
     image = models.ImageField(null=False,blank=False)
-    description = models.TextField()
+    description = models.TextField(null=True)
+    geolocation = models.TextField(null=True)
+    tags = models.TextField(null=True)
+    captureDate = models.DateField(null=True)
+    capturedBy = models.TextField(null=True)
 
     def __str__(self):
         return self.description

@@ -1,9 +1,9 @@
-import os
+import os,magic,datetime,logging
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import get_user_model
-from wsgiref.util import FileWrapper
 from AlbumApp.models import Album,Photo
-import magic
+
+logger = logging.getLogger(__name__)
 
 def gallery(request):
     user=request.user
@@ -43,7 +43,6 @@ def gallery(request):
     #print(context)
     return render(request,'photos/gallery.html')
 
-
 def photo(request,pk):
     photo = request.user.photo_set.get(id=pk)
     allUsers = get_user_model().objects.all()
@@ -55,6 +54,12 @@ def photo(request,pk):
     if request.method == 'POST':
         data=request.POST
         photo.description=data['PhotoDescEdit']
+        photo.geolocation = data['GeolocationEdit']
+        photo.tags = data['TagsEdit']
+        if(data['captureDateEdit']!=''):
+            date = datetime.date(int(data["captureDateEdit"][0:4]),int(data["captureDateEdit"][5:7]),int(data["captureDateEdit"][8:10]))
+            photo.captureDate = date
+        photo.capturedBy = data['CaptuedByEdit']
         photo.save()
         print(data)
 
@@ -67,22 +72,22 @@ def photo(request,pk):
                 usersNotVis.append(user)
                 print("Not vis:",user)
     
+    #print("User set: ", photo.user.get(id=3))
     for user in usersVis:
         if request.method == 'POST':
-            if user.username in request.POST:
-                print(user)
-
+            if user.username not in request.POST:
+                photo.user.remove(user)
+                return redirect('gallery')
 
     for user in usersNotVis:
         if request.method == 'POST':
             if user.username in request.POST:
                 if data[user.username] == 'on':
                     print(photo.user.add(user))
-
-
+                    return redirect('gallery')
+    
     context = {'usersVis':usersVis,'usersNotVis':usersNotVis,'photo':photo}
     return render(request,'photos/photo.html', context)
-
 
 def add(request):
     albums = request.user.album_set.all()
@@ -100,14 +105,21 @@ def add(request):
             album=request.user.album_set.get(id=data['album'])
         elif data['album'] != "":
             album , created = request.user.album_set.get_or_create(name = data['album_new'])
+            pass
         else:
             album = None
+
         
+        date = datetime.date(int(data["captureDate"][0:4]),int(data["captureDate"][5:7]),int(data["captureDate"][8:10]))
         for image in images:
             photo = request.user.photo_set.create(
                 album = album,
-                description = data['description'],
                 image=image,
+                description = data['description'],
+                geolocation = data['cityName'],
+                tags = data['tags'],
+                captureDate = date,
+                capturedBy = data['capturedBy']
             )
 
         return redirect('gallery')
@@ -116,7 +128,6 @@ def add(request):
     return render(request,'photos/add.html', context)
 
 def download_file(request,pk):
-    # fill these variables with real values
     photo = request.user.photo_set.get(id=pk)
     #print(photo.image.url)
     image_buffer = open('static'+photo.image.url, "rb").read()
