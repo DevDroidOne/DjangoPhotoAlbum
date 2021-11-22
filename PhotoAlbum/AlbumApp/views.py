@@ -2,6 +2,7 @@ import os,magic,datetime,logging
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import get_user_model
 from AlbumApp.models import Album,Photo
+from PIL import Image
 
 logger = logging.getLogger(__name__)
 
@@ -9,7 +10,6 @@ def gallery(request):
     user=request.user
     if user.is_authenticated:
         album = request.GET.get('album')
-        print('album:',album)
 
         if album == None:
             photos = request.user.photo_set.all()
@@ -20,36 +20,29 @@ def gallery(request):
 
         if request.method == 'POST':
             data = request.POST
-            print(data)
             if 'DeletePic' in data:
-                print(data['DeletePic'])
-                print(request.user.photo_set.get(id=data['DeletePic']).delete())
+                request.user.photo_set.get(id=data['DeletePic']).delete()
             elif 'DeleteAlbum' in data:
-                print(data['DeleteAlbum'])
-                print(request.user.album_set.get(id=data['DeleteAlbum']).delete())
+                request.user.album_set.get(id=data['DeleteAlbum']).delete()
             elif 'searchDesc' in data:
-                #print(data['searchDesc'])
                 photos = request.user.photo_set.filter(description__icontains=data['searchDesc'])
-                
-                print(photos)#if data['searchDesc'] in 
-                #print(request.user.photo_set.get(id=27))
-            else:
-                print("Nope")
-        
+    else:
+        logger.error("User was not authenticated")
 
     if user.is_authenticated:
         context = {'albums':albums, 'photos':photos, 'user':user}
         return render(request,'photos/gallery.html',context)
-    #print(context)
+    else:
+        logger.error("User was not authenticated")
     return render(request,'photos/gallery.html')
 
 def photo(request,pk):
     photo = request.user.photo_set.get(id=pk)
     allUsers = get_user_model().objects.all()
-    print(allUsers)
+    #print(allUsers)
     usersVis = []
     usersNotVis = []
-    print(photo.user.all())
+    #print(photo.user.all())
     #print(data['PhotoDescEdit'])
     if request.method == 'POST':
         data=request.POST
@@ -61,16 +54,16 @@ def photo(request,pk):
             photo.captureDate = date
         photo.capturedBy = data['CaptuedByEdit']
         photo.save()
-        print(data)
+        #print(data)
 
     for user in allUsers:
         if user != request.user:
             if user in photo.user.all():
-                print("Vis:" ,user)
+                #print("Vis:" ,user)
                 usersVis.append(user)
             else:
                 usersNotVis.append(user)
-                print("Not vis:",user)
+                #print("Not vis:",user)
     
     #print("User set: ", photo.user.get(id=3))
     for user in usersVis:
@@ -83,7 +76,7 @@ def photo(request,pk):
         if request.method == 'POST':
             if user.username in request.POST:
                 if data[user.username] == 'on':
-                    print(photo.user.add(user))
+                    photo.user.add(user)
                     return redirect('gallery')
     
     context = {'usersVis':usersVis,'usersNotVis':usersNotVis,'photo':photo}
@@ -91,15 +84,9 @@ def photo(request,pk):
 
 def add(request):
     albums = request.user.album_set.all()
-    print(albums)
     if request.method == 'POST':
         data = request.POST
         images = request.FILES.getlist('images')
-        print('data:' , data)
-        print('image:' , images)
-        #print(request.user.album_set.create(name="Created in code 1"))
-        #print(request.user.album_set.get(id=2))
-        #print(request.user.photo_set.all())
 
         if data['album'] != 'none':
             album=request.user.album_set.get(id=data['album'])
@@ -108,11 +95,12 @@ def add(request):
             pass
         else:
             album = None
-
         
         date = datetime.date(int(data["captureDate"][0:4]),int(data["captureDate"][5:7]),int(data["captureDate"][8:10]))
         for image in images:
-            photo = request.user.photo_set.create(
+            try:
+                im = Image.open(image)
+                photo = request.user.photo_set.create(
                 album = album,
                 image=image,
                 description = data['description'],
@@ -120,7 +108,9 @@ def add(request):
                 tags = data['tags'],
                 captureDate = date,
                 capturedBy = data['capturedBy']
-            )
+                )
+            except:
+                logger.error("The file format is not correct!")
 
         return redirect('gallery')
 
@@ -128,10 +118,14 @@ def add(request):
     return render(request,'photos/add.html', context)
 
 def download_file(request,pk):
-    photo = request.user.photo_set.get(id=pk)
-    #print(photo.image.url)
-    image_buffer = open('static'+photo.image.url, "rb").read()
-    content_type = magic.from_buffer(image_buffer, mime=True)
-    response = HttpResponse(image_buffer, content_type=content_type);
-    response['Content-Disposition'] = 'attachment; filename="%s"' % os.path.basename('static'+photo.image.url)
+    try:
+        logger.warning("Photo is being downloaded")
+        photo = request.user.photo_set.get(id=pk)
+        image_buffer = open('static'+photo.image.url, "rb").read()
+        content_type = magic.from_buffer(image_buffer, mime=True)
+        response = HttpResponse(image_buffer, content_type=content_type);
+        response['Content-Disposition'] = 'attachment; filename="%s"' % os.path.basename('static'+photo.image.url)
+    except:
+        logger.error("Photo failed to download")
+
     return response
